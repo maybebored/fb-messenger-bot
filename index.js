@@ -21,10 +21,10 @@
 
 // Use dotenv to read .env vars into Node
 require('dotenv').config();
+let { sendMessage } = require('./src/services/fb_reply');
 
 // Imports dependencies and set up http server
 const
-    request = require('request'),
     express = require('express'),
     { urlencoded, json } = require('body-parser'),
     app = express();
@@ -89,9 +89,9 @@ app.post('/webhook', (req, res) => {
             // Check if the event is a message or postback and
             // pass the event to the appropriate handler function
             if (webhookEvent.message) {
-                handleMessage(senderPsid, webhookEvent.message);
+                handleMessage(webhookEvent);
             } else if (webhookEvent.postback) {
-                handlePostback(senderPsid, webhookEvent.postback);
+                handlePostback(webhookEvent);
             }
         });
 
@@ -105,7 +105,8 @@ app.post('/webhook', (req, res) => {
 });
 
 // Handles messages events
-function handleMessage(senderPsid, receivedMessage) {
+// TODO: to be fixed
+function handleMessage(messageEvent) {
     let response;
 
     // Checks if the message contains text
@@ -151,49 +152,35 @@ function handleMessage(senderPsid, receivedMessage) {
 }
 
 // Handles messaging_postbacks events
-function handlePostback(senderPsid, receivedPostback) {
+function handlePostback(postBackEvent) {
     let response;
 
-    // Get the payload for the postback
-    let payload = receivedPostback.payload;
+    const senderPsid = postBackEvent.sender.user_ref;
+    const title = postBackEvent.postback.title;
 
-    // Set the response based on the postback payload
-    if (payload === 'yes') {
-        response = { 'text': 'Thanks!' };
-    } else if (payload === 'no') {
-        response = { 'text': 'Oops, try sending another image.' };
+    // Improvement: move switch case to a helper method
+    // that returns a fully formed response or throws error
+    switch (title) {
+        case 'Get Started':
+            response = { 'text': getRandomGreetingMessage() };
+        // handle other cases in future
     }
-    // Send the message to acknowledge the postback
-    callSendAPI(senderPsid, response);
+
+    if (response.text) {
+        sendMessage(senderPsid, response);
+    }
 }
 
-// Sends response messages via the Send API
-function callSendAPI(senderPsid, response) {
+function getRandomGreetingMessage() {
+    const greetingMessageList = ["Hello", "Hi There", "Welcome to ACME"];
+    let idx = Math.floor(Math.random() * greetingMessageList.length);
+    return greetingMessageList[idx];
+}
 
-    // The page access token we have generated in your app settings
-    const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
-
-    // Construct the message body
-    let requestBody = {
-        'recipient': {
-            'id': senderPsid
-        },
-        'message': response
-    };
-
-    // Send the HTTP request to the Messenger Platform
-    request({
-        'uri': 'https://graph.facebook.com/v2.6/me/messages',
-        'qs': { 'access_token': PAGE_ACCESS_TOKEN },
-        'method': 'POST',
-        'json': requestBody
-    }, (err, _res, _body) => {
-        if (!err) {
-            console.log('Message sent!');
-        } else {
-            console.error('Unable to send message:' + err);
-        }
-    });
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 // listen for requests :)
