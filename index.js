@@ -80,11 +80,8 @@ app.post('/webhook', (req, res) => {
 
             // Gets the body of the webhook event
             let webhookEvent = entry.messaging[0];
+            console.log('---RECEIVED WEBHOOK EVENT---');
             console.log(webhookEvent);
-
-            // Get the sender PSID
-            let senderPsid = webhookEvent.sender.id;
-            console.log('Sender PSID: ' + senderPsid);
 
             // Check if the event is a message or postback and
             // pass the event to the appropriate handler function
@@ -103,6 +100,15 @@ app.post('/webhook', (req, res) => {
         res.sendStatus(404);
     }
 });
+
+// proxy to send requests to fb, for now only echos
+// later could do rate limiting & extra logging
+app.post('/fb_echo/*', (req, res) => {
+    console.log("---Request body sent to FB---");
+    console.log(req.body)
+
+    res.sendStatus(200);
+})
 
 // Handles messages events
 // TODO: to be fixed

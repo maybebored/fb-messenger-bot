@@ -28,7 +28,7 @@ module.exports = class HttpClient {
             httpClient.body(JSON.stringify(body)),
         );
         client(path).then(response => {
-            console.log(response.jsonData);
+            console.log(response.body);
         })
     }
 };

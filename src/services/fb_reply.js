@@ -14,7 +14,7 @@ function sendMessage(senderPsid, message) {
         },
         message,
     };
-    return httpClient.doPost('me/messages', { 'access_token': PAGE_ACCESS_TOKEN }, requestBody);
+    return httpClient.doPost('/me/messages', { 'access_token': PAGE_ACCESS_TOKEN }, requestBody);
 }
 
 module.exports = {
