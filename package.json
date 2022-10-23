@@ -11,7 +11,7 @@
     "url": "git@github.com-maybebored:maybebored/fb-messenger-bot.git"
   },
   "engines": {
-    "node": ">=10.x"
+    "node": ">=18.x"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +19,6 @@
     "body-parser": "^1.20.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "request": "^2.88.2"
+    "http-client": "^4.3.1"
   }
 }
