@@ -4,7 +4,12 @@ Ensure node, npm installed. Ensure Docker installed and running.
 ```bash
 npm i
 chmod +x ./start.sh ## if you haven't done this one time already
-./start.sh
+
+## If running first time or want to run fresh
+npm run setup-and-start
+
+## Otherwise
+npm start
 ```
 
 ### Use postman to interact
