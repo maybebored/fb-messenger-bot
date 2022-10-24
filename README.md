@@ -1,9 +1,9 @@
 ## Get started
 
-Ensure node and npm installed
+Ensure node, npm installed. Ensure Docker installed and running.
 ```bash
-cp .env.sample .env
 npm i
-npm start
+chmod +x ./start.sh ## if you haven't done this one time already
+./start.sh
 ```
 Look at sample requests sections to play around
