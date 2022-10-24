@@ -14,7 +14,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Product.init({
-    sku: DataTypes.INTEGER,
+    sku: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      allowNull: false,
+    },
     name: DataTypes.TEXT,
     description: DataTypes.TEXT,
     shipping: DataTypes.DECIMAL,

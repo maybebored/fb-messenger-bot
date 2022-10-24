@@ -1,17 +1,20 @@
+const ProductRepository = require("../repository/product");
+
 module.exports = class MessageHandler {
     constructor({ message }) {
         this.message = message
         const keys = message.split(' ');
         this.actionRaw = keys[0];
         this.subject = keys[1];
-        this.action = _getAction(this.actionRaw, this.subject);
+        this.action = MessageHandler._getAction(this.actionRaw, this.subject);
+        this.productRepository = new ProductRepository();
     };
 
     async getResponse() {
         if (!this.action) {
             return { 'text': 'Sorry, I did not understand your message.' };
         }
-        const result = await this.action().catch(error => {
+        const result = await this.action(this.productRepository).catch(error => {
             console.log(error);
             return { 'text': 'Sorry, something went wrong.' };
         });
@@ -26,26 +29,23 @@ module.exports = class MessageHandler {
         if (!actionRaw || !subject) {
             return null;
         }
-        switch (rawAction) {
+        switch (actionRaw) {
             case '/desc':
-                return () => {
-                    // return getDescriptionByProductId(subject)
-                    return 'Description ACME';
+                return (productRepository) => {
+                    return productRepository.getBySku(subject).then(res => res.description);
                 };
             case '/price':
-                return () => {
-                    // return getPriceByProductId(subject)
-                    return 'Price ACME';
+                return (productRepository) => {
+                    return productRepository.getBySku(subject).then(res => res.price);
                 };
             case '/shipping':
-                return () => {
-                    // return getShippingByProductId(subject)
-                    return 'Shipping ACME';
+                return (productRepository) => {
+                    return productRepository.getBySku(subject).then(res => res.shipping);
                 };
             case '/buy':
-                return async () => {
-                    const product = await getProductById(subject);
-                    if (product && product.available) {
+                return async (productRepository) => {
+                    const product = await productRepository.getBySku(subject);
+                    if (product) {
                         // _sendPurchaseEmail(product);
                         return 'Your product will be shipped soon';
                     } else {
